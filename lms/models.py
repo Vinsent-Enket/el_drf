@@ -16,3 +16,4 @@ class Course(models.Model):
     description = models.TextField(verbose_name='Описание курса')
     preview = models.ImageField(upload_to='course/', **NULLABLE)
     lessons = models.ManyToManyField(Lesson, verbose_name='Уроки курса', **NULLABLE)
+
