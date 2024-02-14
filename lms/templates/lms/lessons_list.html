@@ -1,0 +1,17 @@
+{% extends 'lms/base.html' %}
+{% load static %}
+
+{% block content %}
+{% include 'lms/includes/inc_service_menu.html' %}
+{% for object in object_list %}
+
+<div class="col-4">
+     <div class="card" style="width: 25rem, height: 25rem;">
+         <h4> {{object}} </h4>
+         <br>
+     </div>
+
+</div>
+
+{% endfor %}
+{% endblock %}

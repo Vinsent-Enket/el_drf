@@ -1,0 +1,10 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block content %}
+<h1>Письмо было отправлено на электронную почту, пройдите по ссылке и подтвердите регистрацию</h1>
+<a class="nav-link" aria-current="page" href="{% url 'main:main_page' %}">Главная</a>
+<a class="nav-link" href="{% url 'users:login' %}">Вход</a>
+
+
+{% endblock %}
