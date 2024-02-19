@@ -10,11 +10,16 @@ from django.views import View
 # Create your views here.
 from django.views.generic import CreateView, UpdateView, ListView
 from django.contrib.messages.views import SuccessMessageMixin
+from django_filters.rest_framework import filters, DjangoFilterBackend
+from rest_framework.generics import ListAPIView
 
 from config import settings
-from users.models import User
+from users.models import User, Transaction
 from users.forms import UserRegisterForm, UserProfileForm
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
+
+from users.serializers import TransactionSerializer
+from rest_framework.filters import OrderingFilter
 
 
 def generate_new_password(request):
@@ -109,3 +114,11 @@ class UserPasswordResetConfirmView(SuccessMessageMixin, PasswordResetConfirmView
 
 def registration_info(request):
     return render(request, 'users/registr_info.html')
+
+
+class TransactionListAPIView(ListAPIView):
+    serializer_class = TransactionSerializer
+    queryset = Transaction.objects.all()
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    filterset_fields = ('purchased_course', 'purchased_lessons', 'payment_method', )
+    ordering_fields = ('date', )

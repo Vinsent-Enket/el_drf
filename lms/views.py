@@ -12,6 +12,7 @@ from lms.serelizers import LessonSerializer, CourseSerializer
 def index(request):
     return render(request, 'lms/index.html')
 
+
 class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
