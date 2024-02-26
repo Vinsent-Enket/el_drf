@@ -8,13 +8,13 @@ from django.contrib.auth.forms import PasswordResetForm
 class UserRegisterForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ('self_email', 'work_email', 'first_name', 'last_name',  'password1', 'password2', )
+        fields = ('email',  'password1', 'password2', )
 
 
 class UserProfileForm(UserChangeForm):
     class Meta:
         model = User
-        fields = ('self_email', 'work_email', 'first_name', 'last_name', 'phone', 'avatar')
+        fields = ('email', )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

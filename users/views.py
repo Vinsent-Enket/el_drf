@@ -1,124 +1,54 @@
-import random
-import string
-from django.contrib.sites.shortcuts import get_current_site
-from django.shortcuts import redirect, render
-
-from django.urls import reverse_lazy, reverse
-from django.core.mail import send_mail
-from django.views import View
-
-# Create your views here.
-from django.views.generic import CreateView, UpdateView, ListView
-from django.contrib.messages.views import SuccessMessageMixin
 from django_filters.rest_framework import filters, DjangoFilterBackend
+from rest_framework import generics
+from rest_framework.decorators import permission_classes
 from rest_framework.generics import ListAPIView
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from config import settings
+from config.permission import IsModerator
+from lms.serializers import UserSerializer
 from users.models import User, Transaction
-from users.forms import UserRegisterForm, UserProfileForm
-from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
-
-from users.serializers import TransactionSerializer
+from users.serializers import TransactionSerializer, MyTokenObtainPairSerializer
 from rest_framework.filters import OrderingFilter
 
 
-def generate_new_password(request):
-    new_password = ''.join([str(random.randint(0, 9)) for _ in range(12)])
-    request.user.set_password(new_password)
-    request.user.save()
-
-    send_mail(
-        subject='Вы сменили пароль',
-        message=f'Ваш новый пароль: {new_password}',
-        from_email=settings.EMAIL_HOST_USER,
-        recipient_list=[request.user.email]
-    )
-    return redirect(reverse('catalog:index'))
+class UserCreateAPIView(generics.CreateAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = UserSerializer
 
 
-class RegistrationView(CreateView):
-    model = User
-    form_class = UserRegisterForm
-    template_name = 'users/register.html'
-    success_url = reverse_lazy('users:registration_info')
-
-    def form_valid(self, form):
-        response = super().form_valid(form)
-        new_user = form.save()
-        # Создаем и сохраняем токен подтверждения
-        token = ''.join(random.choices(string.ascii_letters + string.digits, k=50))
-        new_user.email_verification_token = token
-        new_user.save()
-        # Отправляем письмо с подтверждением
-        current_site = get_current_site(self.request)
-        mail_subject = 'Подтвердите ваш аккаунт'
-        message = (
-            f'Добро пожаловать в Сервис управления рассылок, пожалуйста, завершите регистрацию перейди по ссылке\n'
-            f'http://{current_site.domain}{reverse("users:verify_email", kwargs={"uid": new_user.pk, "token": token})}'
-        )
-        send_mail(subject=mail_subject, message=message, from_email=settings.EMAIL_HOST_USER,
-                  recipient_list=[new_user.self_email])
-
-        return response
+class UserListAPIView(generics.ListAPIView):
+    permission_classes = [IsModerator]
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
 
 
-class VerifyEmailView(View):
-    def get(self, request, uid, token):
-        try:
-            user = User.objects.get(pk=uid, email_verification_token=token)
-            user.is_active = True
-            user.save()
-            return render(request, 'users/registr_success.html')  # Покажем сообщение о регистрации
-        except User.DoesNotExist:
-            return render(request, 'users/registr_failed.html')  # Покажем сообщение об ошибке
+class UserRetrieveAPIView(generics.RetrieveAPIView):
+    permission_classes = [IsModerator]
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
 
 
-class ProfileView(UpdateView):
-    model = User
-    form_class = UserProfileForm
-    success_url = reverse_lazy('users:profile')
-
-    def get_object(self, queryset=None):
-        return self.request.user
+class UserUpdateAPIView(generics.UpdateAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
 
 
-class UserForgotPasswordView(SuccessMessageMixin, PasswordResetView):
-    """
-    Представление по сбросу пароля по почте
-    """
-    template_name = 'users/user_password_reset.html'
-    success_url = reverse_lazy('catalog:index')
-    success_message = 'Письмо с инструкцией по восстановлению пароля отправлена на ваш email'
-    subject_template_name = 'users/email/password_subject_reset_mail.txt'
-    email_template_name = 'users/email/password_reset_mail.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = 'Запрос на восстановление пароля'
-        return context
-
-
-class UserPasswordResetConfirmView(SuccessMessageMixin, PasswordResetConfirmView):
-    """
-    Представление установки нового пароля
-    """
-    template_name = 'users/user_password_set_new.html'
-    success_url = reverse_lazy('catalog:index')
-    success_message = 'Пароль успешно изменен. Можете авторизоваться на сайте.'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = 'Установить новый пароль'
-        return context
-
-
-def registration_info(request):
-    return render(request, 'users/registr_info.html')
+class UserDestroyAPIView(generics.DestroyAPIView):
+    permission_classes = [IsModerator]
+    queryset = User.objects.all()
 
 
 class TransactionListAPIView(ListAPIView):
+    permission_classes = [IsModerator]
     serializer_class = TransactionSerializer
     queryset = Transaction.objects.all()
     filter_backends = [DjangoFilterBackend, OrderingFilter]
-    filterset_fields = ('purchased_course', 'purchased_lessons', 'payment_method', )
-    ordering_fields = ('date', )
+    filterset_fields = ('purchased_course', 'purchased_lessons', 'payment_method',)
+    ordering_fields = ('date',)
+
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer
