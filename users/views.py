@@ -4,7 +4,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from users.permission import IsTrueUser, IsModerator
+from users.permission import IsTrueUser, IsModerator, IsProprietor
 from users.models import User, Transaction
 from users.serializers import TransactionSerializer, MyTokenObtainPairSerializer, UserSerializer
 from rest_framework.filters import OrderingFilter
@@ -39,7 +39,7 @@ class UserDestroyAPIView(generics.DestroyAPIView):
 
 
 class TransactionListAPIView(ListAPIView):
-    permission_classes = [IsModerator]
+    permission_classes = [IsModerator,]
     serializer_class = TransactionSerializer
     queryset = Transaction.objects.all()
     filter_backends = [DjangoFilterBackend, OrderingFilter]
