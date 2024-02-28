@@ -14,15 +14,14 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                        aria-expanded="false">
-                        {{ user.self_email }}
+                        {{ user.email }}
                     </a>
                     <ul class="dropdown-menu">
                         <li class="nav-item">
                             <a class="nav-link active" aria-current="page" href="{% url 'users:logout' %}">Выйти</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active" aria-current="page"
-                               href="{% url 'users:profile' %}">Профиль</a>
+                            <a class="nav-link active" aria-current="page"></a>
                         </li>
                         <li>
                             <hr class="dropdown-divider">
@@ -31,12 +30,10 @@
                 </li>
                 {% else %}
                 <li class="nav-item active">
-                    <a class="nav-link active" aria-current="page"
-                       href="{% url 'users:login' %}">Войти</a>
+                    <a class="nav-link active" aria-current="page"></a>
                 </li>
                 <li class="nav-item active">
-                    <a class="nav-link active" aria-current="page"
-                       href="{% url 'users:registration' %}">Регистрация</a>
+                    <a class="nav-link active" aria-current="page"></a>
                 </li>
                 {% endif %}
                 <li class="nav-item dropdown">

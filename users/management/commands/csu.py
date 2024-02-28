@@ -7,7 +7,7 @@ class Command(BaseCommand):
     """Надо ли и тут прятать логины пароли в переменные окружения????"""
     def handle(self, *args, **options):
         user = User.objects.create(
-            email='Admin@django.ru',
+            email='Admin2@django.ru',
             is_staff=True,
             is_superuser=True
         )

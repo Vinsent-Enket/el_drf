@@ -1,15 +1,12 @@
-from django_filters.rest_framework import filters, DjangoFilterBackend
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
-from rest_framework.decorators import permission_classes
 from rest_framework.generics import ListAPIView
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from config import settings
-from config.permission import IsModerator
-from lms.serializers import UserSerializer
+from users.permission import IsTrueUser, IsModerator
 from users.models import User, Transaction
-from users.serializers import TransactionSerializer, MyTokenObtainPairSerializer
+from users.serializers import TransactionSerializer, MyTokenObtainPairSerializer, UserSerializer
 from rest_framework.filters import OrderingFilter
 
 
@@ -19,25 +16,25 @@ class UserCreateAPIView(generics.CreateAPIView):
 
 
 class UserListAPIView(generics.ListAPIView):
-    permission_classes = [IsModerator]
-    serializer_class = UserSerializer
-    queryset = User.objects.all()
-
-
-class UserRetrieveAPIView(generics.RetrieveAPIView):
-    permission_classes = [IsModerator]
-    serializer_class = UserSerializer
-    queryset = User.objects.all()
-
-
-class UserUpdateAPIView(generics.UpdateAPIView):
     permission_classes = [AllowAny]
     serializer_class = UserSerializer
     queryset = User.objects.all()
 
 
+class UserRetrieveAPIView(generics.RetrieveAPIView):
+    permission_classes = [IsTrueUser]
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+
+
+class UserUpdateAPIView(generics.UpdateAPIView):
+    permission_classes = [IsTrueUser]
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+
+
 class UserDestroyAPIView(generics.DestroyAPIView):
-    permission_classes = [IsModerator]
+    permission_classes = [IsTrueUser]
     queryset = User.objects.all()
 
 

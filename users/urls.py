@@ -9,7 +9,10 @@ from users.views import UserCreateAPIView, UserListAPIView, UserRetrieveAPIView,
 app_name = UsersConfig.name
 
 urlpatterns = [
-    path('user/create/', UserCreateAPIView.as_view(), name='user_create'),
+    path('registration/', UserCreateAPIView.as_view(), name='user_create'),
+    path('profile/<int:pk>/', UserRetrieveAPIView.as_view(), name='profile'),
+    path('profile_update/<int:pk>/', UserUpdateAPIView.as_view(), name='profile_update'),
+    path('profile_list/', UserListAPIView.as_view(), name='profile_list'),
 
     # урлы для транзакций
     path('transaction/', TransactionListAPIView.as_view(), name='transaction_list'),

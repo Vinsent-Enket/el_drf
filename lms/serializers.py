@@ -21,8 +21,3 @@ class CourseSerializer(serializers.ModelSerializer):
     def get_lessons_count(self, instance):
         return instance.lessons.all().count()
 
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = '__all__'
