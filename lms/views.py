@@ -27,6 +27,8 @@ class CourseViewSet(viewsets.ModelViewSet):
             self.permission_classes = [IsAuthenticated, IsProprietor | IsModerator]
         elif self.action == 'update':
             self.permission_classes = [IsAuthenticated, IsProprietor | IsModerator]
+        elif self.action == 'partial_update':
+            self.permission_classes = [IsAuthenticated, IsProprietor | IsModerator]
         elif self.action == 'destroy':
             self.permission_classes = [IsAuthenticated, IsProprietor]
         return [permission() for permission in self.permission_classes]
