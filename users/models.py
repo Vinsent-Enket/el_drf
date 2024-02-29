@@ -46,7 +46,7 @@ class Transaction(models.Model):
         verbose_name_plural = 'Транзакции'
 
 
-class Subscribe(models.Model):
-    ??????????????????
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь подписавшийся на курс')
-    course = models.ManyToManyField(Course, on_delete=models.CASCADE, blank=True, verbose_name='Курсы на которые подписан')
+# class Subscribe(models.Model):
+#     ??????????????????
+#     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь подписавшийся на курс')
+#     course = models.ManyToManyField(Course, on_delete=models.CASCADE, blank=True, verbose_name='Курсы на которые подписан')
