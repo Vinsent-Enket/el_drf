@@ -11,7 +11,6 @@ NULLABLE = {'blank': True, 'null': True}
 class User(AbstractUser):
     username = None
     email = models.EmailField(unique=True, verbose_name='Личная почта')
-    # work_email = models.EmailField(verbose_name='Рабочая почта', **NULLABLE)
     # name = models.CharField(max_length=30, verbose_name='Имя пользователя')
     # last_name = models.CharField(max_length=30, verbose_name='Фамилия пользователя')
     # email_verification_token = models.CharField(max_length=255, verbose_name='Токен для регистрации', **NULLABLE)
@@ -45,3 +44,9 @@ class Transaction(models.Model):
     class Meta:
         verbose_name = 'Транзакция'
         verbose_name_plural = 'Транзакции'
+
+
+class Subscribe(models.Model):
+    ??????????????????
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь подписавшийся на курс')
+    course = models.ManyToManyField(Course, on_delete=models.CASCADE, blank=True, verbose_name='Курсы на которые подписан')

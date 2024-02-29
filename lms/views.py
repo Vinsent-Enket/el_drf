@@ -20,7 +20,7 @@ class CourseViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action == 'create':
-            self.permission_classes = [IsAuthenticated, IsLmsCreator]
+            self.permission_classes = [IsAuthenticated, ~IsModerator]
         elif self.action == 'list':
             self.permission_classes = [IsAuthenticated, IsProprietor | IsModerator]
         elif self.action == 'retrieve':
@@ -33,7 +33,7 @@ class CourseViewSet(viewsets.ModelViewSet):
 
 
 class LessonCreateAPIView(generics.CreateAPIView):
-    permission_classes = [IsAuthenticated, IsLmsCreator]
+    permission_classes = [IsAuthenticated, ~IsModerator]
     serializer_class = LessonSerializer
 
 
