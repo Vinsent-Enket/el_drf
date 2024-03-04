@@ -8,9 +8,27 @@ NULLABLE = {'blank': True, 'null': True}
 
 
 # Create your models here.
+class Subscribe(models.Model):
+    """
+    Можете меня побить за то что я отошел от ТЗ. Но мне кажется логичнее создать один объект подписки, привязать его к пользователю
+    и уже в нем убавлять/добавлять подписки, просто создавать его не отдельным эндпоинтом, а при создании юзера
+    """
+    proprietor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE, related_name='proprietor_of_sub',
+                                   verbose_name='Владелец')
+    courses = models.ManyToManyField(Course, blank=True, verbose_name='Курсы на которые подписан')
+
+    @property
+    def latest_update(self):
+        data = {}
+        for course in self.courses.objects.all():
+            last_lesson_date = course.latest_update
+            data[course.name] = last_lesson_date
+
+
 class User(AbstractUser):
     username = None
     email = models.EmailField(unique=True, verbose_name='Личная почта')
+    subscribe = models.ForeignKey(Subscribe, **NULLABLE, on_delete=models.SET_NULL, verbose_name='Подписка')
     # name = models.CharField(max_length=30, verbose_name='Имя пользователя')
     # last_name = models.CharField(max_length=30, verbose_name='Фамилия пользователя')
     # email_verification_token = models.CharField(max_length=255, verbose_name='Токен для регистрации', **NULLABLE)
@@ -44,9 +62,3 @@ class Transaction(models.Model):
     class Meta:
         verbose_name = 'Транзакция'
         verbose_name_plural = 'Транзакции'
-
-
-# class Subscribe(models.Model):
-#     ??????????????????
-#     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь подписавшийся на курс')
-#     course = models.ManyToManyField(Course, on_delete=models.CASCADE, blank=True, verbose_name='Курсы на которые подписан')
