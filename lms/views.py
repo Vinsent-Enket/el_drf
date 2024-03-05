@@ -1,8 +1,10 @@
+from django.http import request
 from django.shortcuts import render
 from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework import viewsets, generics
 from rest_framework.permissions import IsAuthenticated
 
+from config import settings
 from lms.models import Lesson, Course
 from lms.paginators import LMSPagination
 from lms.serializers import LessonSerializer, CourseSerializer
@@ -23,7 +25,7 @@ class CourseViewSet(viewsets.ModelViewSet):
     def get(self, request):
         queryset = Course.objects.all()
         paginated_queryset = self.paginate_queryset(queryset)
-        serializer = CourseSerializer(paginated_queryset, many=True)
+        serializer = CourseSerializer(paginated_queryset, many=True, context={'request': request})
         return self.get_paginated_response(serializer.data)
 
     def get_permissions(self):

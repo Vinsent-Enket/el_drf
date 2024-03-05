@@ -1,9 +1,12 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, get_object_or_404
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 
+from lms.models import Course
 from users.permission import IsTrueUser, IsModerator, IsProprietor
 from users.models import User, Transaction, Subscribe
 from users.serializers import TransactionSerializer, MyTokenObtainPairSerializer, UserSerializer, SubscribeSerializer
@@ -58,10 +61,35 @@ class SubscribeRetrieveAPIView(generics.RetrieveAPIView):
     serializer_class = SubscribeSerializer
     queryset = Subscribe.objects.all()
 
+
 class SubscribeUpdateAPIView(generics.UpdateAPIView):
     permission_classes = [IsAuthenticated, IsProprietor]
     serializer_class = SubscribeSerializer
     queryset = Subscribe.objects.all()
+
+
+class SubscribeAPIView(APIView):
+    permission_classes = [IsAuthenticated, ~IsModerator]
+
+    def post(self, *args, **kwargs):
+        user = self.request.user
+        course_id = self.request.data.get('course_id')
+        course = get_object_or_404(Course, pk=course_id)
+        try:
+            subscribe = Subscribe.objects.get(proprietor=user, courses=course)
+        except Subscribe.DoesNotExist:
+
+            subscribe = Subscribe(
+                proprietor=user,
+                courses=course
+            )
+            subscribe.save()
+            message = f'Вы подписались на курс - {course.name}'
+        else:
+            subscribe.delete()
+            message = 'Вы отписались от обновлений курса'
+
+        return Response({'message': message})
 
 
 class MyTokenObtainPairView(TokenObtainPairView):

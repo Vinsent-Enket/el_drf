@@ -13,16 +13,10 @@ class Subscribe(models.Model):
     Можете меня побить за то что я отошел от ТЗ. Но мне кажется логичнее создать один объект подписки, привязать его к пользователю
     и уже в нем убавлять/добавлять подписки, просто создавать его не отдельным эндпоинтом, а при создании юзера
     """
-    proprietor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE, related_name='proprietor_of_sub',
+    proprietor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE,
+                                   related_name='proprietor_of_sub',
                                    verbose_name='Владелец')
-    courses = models.ManyToManyField(Course, blank=True, verbose_name='Курсы на которые подписан')
-
-    @property
-    def latest_update(self):
-        data = {}
-        for course in self.courses.objects.all():
-            last_lesson_date = course.latest_update
-            data[course.name] = last_lesson_date
+    courses = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name='Курс на которые подписан', **NULLABLE)
 
 
 class User(AbstractUser):

@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from lms.models import Lesson, Course
 from lms.validators import URLValidator
-from users.models import User
+from users.models import User, Subscribe
 
 
 class LessonSerializer(serializers.ModelSerializer):
@@ -30,6 +30,10 @@ class CourseSerializer(serializers.ModelSerializer):
     sign_of_subscription = serializers.SerializerMethodField()
     lessons_list = LessonSerializer(source='lessons', many=True)
 
+    def __init__(self, user, **kwargs):
+        super().__init__(**kwargs)
+        self.user = user
+
     class Meta:
         model = Course
         fields = '__all__'
@@ -37,9 +41,10 @@ class CourseSerializer(serializers.ModelSerializer):
     def get_lessons_count(self, instance):
         return instance.lessons.all().count()
 
-
     def get_sign_of_subscription(self, instance):
-        print(instance.proprietor.subscribe)
-        if instance == instance.proprietor.subscribe:
-            return "Yes"
-        return "None"
+        try:
+            Subscribe.objects.get(proprietor=self.context['request'].user, courses=instance)
+        except Subscribe.DoesNotExist:
+            return False
+        else:
+            return True
