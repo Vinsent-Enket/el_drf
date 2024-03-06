@@ -12,7 +12,5 @@ class URLValidator:
             return
         word2 = word.lower()
 
-        if word2.startswith('http://youtube.com') or word2.startswith('http://127.0.0.1:8000'):
-            pass
-        else:
+        if not word2.startswith('http://youtube.com'):
             raise serializers.ValidationError("The value is uncorrected")

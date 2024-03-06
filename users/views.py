@@ -87,7 +87,7 @@ class SubscribeAPIView(APIView):
             message = f'Вы подписались на курс - {course.name}'
         else:
             subscribe.delete()
-            message = 'Вы отписались от обновлений курса'
+            message = f'Вы отписались от обновлений курса - {course.name}'
 
         return Response({'message': message})
 
