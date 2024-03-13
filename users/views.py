@@ -97,7 +97,7 @@ class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
 
-class TransactionAPIView(APIView):
+class TransactionCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, *args, **kwargs):
@@ -114,5 +114,8 @@ class TransactionAPIView(APIView):
             # names = ', '.join(courses_names+lessons_names)
             names = 'Курсы и уроки заявленные к покупке'
             link = servises.get_payment_link(products_name=names, price=amount)
+            transaction.strip_session_id = link['id']
             message = f'Ссылка на оплату {link['url']}'
         return Response({'message': message})
+
+
