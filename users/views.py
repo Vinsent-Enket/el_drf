@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from lms.models import Course
+from users import servises
 from users.permission import IsTrueUser, IsModerator, IsProprietor
 from users.models import User, Transaction, Subscribe
 from users.serializers import TransactionSerializer, MyTokenObtainPairSerializer, UserSerializer, SubscribeSerializer
@@ -94,3 +95,24 @@ class SubscribeAPIView(APIView):
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
+
+
+class TransactionAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, *args, **kwargs):
+        transaction_id = self.request.data.get('transaction_id')
+        user = self.request.user
+        try:
+            transaction = Transaction.objects.get(user=user, id=transaction_id)
+            amount = transaction.payment_amount
+        except Transaction.DoesNotExist:
+            message = f'Неверный ID покупки - {transaction_id}'
+        else:
+            # courses_names = [lesson.name for lesson in transaction.purchased_course.objects.all()]
+            # lessons_names = [lesson.name for lesson in transaction.purchased_lessons.objects.all()] #как мне вытащить названия?
+            # names = ', '.join(courses_names+lessons_names)
+            names = 'Курсы и уроки заявленные к покупке'
+            link = servises.get_payment_link(products_name=names, price=amount)
+            message = f'Ссылка на оплату {link['url']}'
+        return Response({'message': message})
