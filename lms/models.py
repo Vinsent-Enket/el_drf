@@ -30,6 +30,10 @@ class Course(models.Model):
     lessons = models.ManyToManyField(Lesson, verbose_name='Уроки курса')
     proprietor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE,
                                    verbose_name='Владелец')
+    price = models.PositiveIntegerField(verbose_name='Цена', default=0)
+    stripe_product_id = models.CharField(max_length=50, verbose_name='Айди курса на Stripe', default='')
+    stripe_price_id = models.CharField(max_length=50, verbose_name='Айди цены на Stripe', default='')
+
 
     @property
     def latest_update(self):

@@ -45,12 +45,13 @@ class Transaction(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь совершивший транзакцию')
     date = models.DateField(auto_now=True, verbose_name='Время транзакции')
     purchased_course = models.ManyToManyField(Course, verbose_name='Купленные курсы', blank=True)
-    purchased_lessons = models.ManyToManyField(Lesson, verbose_name='Купленные отдельные уроки', blank=True)
-    payment_amount = models.PositiveIntegerField(
-        verbose_name='Сумма оплаты', default=0)  # добавить ли тогда каждому уроку цену? И как тогда будет считаться цена за курс? Просто по сумме стоимости уроков в него входящих + скидка или фиксированный прайс?
+    #purchased_lessons = models.ManyToManyField(Lesson, verbose_name='Купленные отдельные уроки', blank=True)
+    #payment_amount = models.PositiveIntegerField(
+        #verbose_name='Сумма оплаты', default=0)  # добавить ли тогда каждому уроку цену? И как тогда будет считаться цена за курс? Просто по сумме стоимости уроков в него входящих + скидка или фиксированный прайс?
     payment_method = models.CharField(choices=payment_method_choice, max_length=50, verbose_name='Способ оплаты')
     status = models.BooleanField(default=False, verbose_name='Статус оплаты')
-    strip_session_id = models.CharField(max_length=50, **NULLABLE, verbose_name='идентификатор сессии')
+    strip_session_id = models.CharField(max_length=70, **NULLABLE, verbose_name='идентификатор сессии')
+    url_to_pay = models.TextField(verbose_name='Ссылка на оплату', default='') # от страйпа получаю слишком длинную строку(>200), модель не принимает
 
     def __str__(self):
         return f'{self.user}, {self.date}, {self.payment_amount}'

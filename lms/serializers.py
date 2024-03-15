@@ -28,15 +28,11 @@ class SubscribeSerializer(serializers.ModelSerializer):
 class CourseSerializer(serializers.ModelSerializer):
     lessons_count = serializers.SerializerMethodField()
     sign_of_subscription = serializers.SerializerMethodField()
-    lessons_list = LessonSerializer(source='lessons', many=True)
-
-    def __init__(self, user, **kwargs):
-        super().__init__(**kwargs)
-        self.user = user
+    #lessons_list = LessonSerializer(source='lessons', many=True)
 
     class Meta:
         model = Course
-        fields = '__all__'
+        exclude = ('stripe_product_id', 'stripe_price_id')
 
     def get_lessons_count(self, instance):
         return instance.lessons.all().count()

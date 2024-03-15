@@ -5,9 +5,10 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
 class TransactionSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Transaction
-        fields = '__all__'
+        exclude = ('user',)
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):

@@ -3,11 +3,13 @@ from django.shortcuts import render
 from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework import viewsets, generics
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from config import settings
 from lms.models import Lesson, Course
 from lms.paginators import LMSPagination
 from lms.serializers import LessonSerializer, CourseSerializer
+from users import servises
 from users.permission import IsModerator, IsProprietor
 
 
@@ -28,9 +30,16 @@ class CourseViewSet(viewsets.ModelViewSet):
         serializer = CourseSerializer(paginated_queryset, many=True, context={'request': request})
         return self.get_paginated_response(serializer.data)
 
+    def perform_create(self, serializer):
+        stripe_product_id = servises.create_stripe_product(self.request.data['name'])
+        stripe_price_id = servises.create_stripe_price(stripe_product_id, self.request.data['price'])
+        serializer.save(stripe_product_id=stripe_product_id, stripe_price_id=stripe_price_id)
+
     def get_permissions(self):
         if self.action == 'create':
-            self.permission_classes = [IsAuthenticated, ~IsModerator]
+            #self.permission_classes = [IsAuthenticated, ~IsModerator]
+            self.permission_classes = [IsAuthenticated]
+
         elif self.action == 'list':
             self.permission_classes = [IsAuthenticated, IsProprietor | IsModerator]
         elif self.action == 'retrieve':
@@ -46,7 +55,6 @@ class CourseViewSet(viewsets.ModelViewSet):
 
 class LessonCreateAPIView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated, ~IsModerator]
-
     serializer_class = LessonSerializer
 
 

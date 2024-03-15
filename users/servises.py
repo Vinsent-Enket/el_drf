@@ -8,16 +8,24 @@ from config import settings
 stripe.api_key = settings.STRIPE_API_KEY
 
 
-def get_payment_link(products_name, price):
-    name = products_name
-    stripe_product = stripe.Product.create(name=name)  # судя по документации можно сразу указать параметры для прайса, но у меня не вышло
+def create_stripe_product(product_name):
+    stripe_product = stripe.Product.create(
+        name=product_name)  # судя по документации можно сразу указать параметры для прайса, но у меня не вышло
+    return stripe_product['id']
+
+
+def create_stripe_price(product_id, price):
     stripe_price = stripe.Price.create(currency="rub",
                                        unit_amount=price * 100,
-                                       product=stripe_product['id']
+                                       product=product_id
                                        )
+    return stripe_price['id']
+
+
+def get_payment_link(price_id):
     stripe_session = stripe.checkout.Session.create(
         success_url="https://example.com/success",
-        line_items=[{"price": stripe_price['id'], "quantity": 1}], mode="payment", )
+        line_items=[{"price": price_id, "quantity": 1}], mode="payment", )
     return stripe_session
 
 

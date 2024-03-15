@@ -1,6 +1,6 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
-from rest_framework.generics import ListAPIView, get_object_or_404
+from rest_framework.generics import ListAPIView, get_object_or_404, CreateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -97,9 +97,21 @@ class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
 
-class TransactionCreateAPIView(APIView):
+class TransactionCreateAPIView(CreateAPIView):
     permission_classes = [IsAuthenticated]
+    serializer_class = TransactionSerializer
 
+    def perform_create(self, serializer):
+        course = Course.objects.get(id=self.request.data['course_id'])
+        stripe_price_id = course.stripe_price_id
+        # получаем из запроса на оплату id курса и получаем ссылку на прайс
+        stripe_session = servises.get_payment_link(stripe_price_id)
+        url_to_pay = stripe_session['url']
+        serializer.save(strip_session_id=stripe_session['id'], user=self.request.user, url_to_pay=url_to_pay)
+
+
+
+class TransactionPayAPIView(APIView):
     def post(self, *args, **kwargs):
         transaction_id = self.request.data.get('transaction_id')
         user = self.request.user
@@ -113,9 +125,5 @@ class TransactionCreateAPIView(APIView):
             # lessons_names = [lesson.name for lesson in transaction.purchased_lessons.objects.all()] #как мне вытащить названия?
             # names = ', '.join(courses_names+lessons_names)
             names = 'Курсы и уроки заявленные к покупке'
-            link = servises.get_payment_link(products_name=names, price=amount)
-            transaction.strip_session_id = link['id']
-            message = f'Ссылка на оплату {link['url']}'
+
         return Response({'message': message})
-
-
