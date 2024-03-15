@@ -28,7 +28,7 @@ class SubscribeSerializer(serializers.ModelSerializer):
 class CourseSerializer(serializers.ModelSerializer):
     lessons_count = serializers.SerializerMethodField()
     sign_of_subscription = serializers.SerializerMethodField()
-    #lessons_list = LessonSerializer(source='lessons', many=True)
+    lessons_list = LessonSerializer(source='lessons', many=True, read_only=True)
 
     class Meta:
         model = Course

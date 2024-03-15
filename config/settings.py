@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'drf_yasg',
     'corsheaders',
+    'django_celery_beat',
 
     'users',
     'lms',
@@ -168,3 +169,7 @@ CORS_ALLOWED_ORIGINS = [
 CSRF_TRUSTED_ORIGINS = [
     "https://read-and-write.example.com",
 ]
+
+CACHES_LOCATION = 'redis://127.0.0.1:6379'
+CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'

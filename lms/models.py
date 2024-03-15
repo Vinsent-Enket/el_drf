@@ -27,7 +27,7 @@ class Course(models.Model):
     name = models.CharField(max_length=40, verbose_name='Название курса')
     description = models.TextField(verbose_name='Описание курса')
     preview = models.ImageField(upload_to='course/', **NULLABLE)
-    lessons = models.ManyToManyField(Lesson, verbose_name='Уроки курса')
+    lessons = models.ManyToManyField(Lesson, verbose_name='Уроки курса', **NULLABLE)
     proprietor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE,
                                    verbose_name='Владелец')
     price = models.PositiveIntegerField(verbose_name='Цена', default=0)
