@@ -110,7 +110,6 @@ class TransactionCreateAPIView(CreateAPIView):
         serializer.save(strip_session_id=stripe_session['id'], user=self.request.user, url_to_pay=url_to_pay)
 
 
-
 class TransactionPayAPIView(APIView):
     def post(self, *args, **kwargs):
         transaction_id = self.request.data.get('transaction_id')

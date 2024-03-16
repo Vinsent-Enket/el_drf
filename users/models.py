@@ -9,14 +9,10 @@ NULLABLE = {'blank': True, 'null': True}
 
 # Create your models here.
 class Subscribe(models.Model):
-    """
-    Можете меня побить за то что я отошел от ТЗ. Но мне кажется логичнее создать один объект подписки, привязать его к пользователю
-    и уже в нем убавлять/добавлять подписки, просто создавать его не отдельным эндпоинтом, а при создании юзера
-    """
     proprietor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE,
-                                   related_name='proprietor_of_sub',
+                                   related_name='user_sub',
                                    verbose_name='Владелец')
-    courses = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name='Курс на которые подписан', **NULLABLE)
+    courses = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name='Курс на которые подписан', **NULLABLE, related_name='courses_sub')
 
 
 class User(AbstractUser):

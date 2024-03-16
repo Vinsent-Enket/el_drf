@@ -170,6 +170,26 @@ CSRF_TRUSTED_ORIGINS = [
     "https://read-and-write.example.com",
 ]
 
-CACHES_LOCATION = 'redis://127.0.0.1:6379'
-CELERY_BROKER_URL = 'redis://localhost:6379'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+# настройки для отправки писем
+EMAIL_HOST = 'smtp.mail.ru'
+EMAIL_PORT = 2525
+EMAIL_HOST_USER = os.getenv('MAIL_RU_LOGIN')
+EMAIL_HOST_PASSWORD = os.getenv('MAIL_RU_PASSWORD')
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+CACHES_LOCATION = os.getenv('CELERY_URL')
+CELERY_BROKER_URL = os.getenv('CELERY_URL')
+CELERY_RESULT_BACKEND = os.getenv('CELERY_URL')
+
+CELERY_BEAT_SCHEDULE = {
+    'task-name': {
+        'task': 'users.tasks.users_check_login',  # Путь к задаче
+        'schedule': timedelta(days=1),  # Расписание выполнения задачи
+    },
+}
+
+CELERY_TASK_TRACK_STARTED = True
+
+CELERY_TASK_TIME_LIMIT = 30 * 60

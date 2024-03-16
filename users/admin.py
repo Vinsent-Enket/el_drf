@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from users.models import User, Transaction
+from users.models import User, Transaction, Subscribe
 
 # Register your models here.
 
@@ -8,3 +8,5 @@ from users.models import User, Transaction
 admin.site.register(User)
 
 admin.site.register(Transaction)
+
+admin.site.register(Subscribe)

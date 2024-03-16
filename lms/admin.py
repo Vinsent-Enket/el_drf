@@ -14,3 +14,4 @@ class LessonAdmin(admin.ModelAdmin):
 class CourseAdmin(admin.ModelAdmin):
     list_display = ('name', )
 
+

@@ -5,7 +5,6 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
 class TransactionSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Transaction
         exclude = ('user',)

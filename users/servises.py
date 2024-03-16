@@ -45,4 +45,3 @@ def get_session_status(stripe_session_id):
 #     line_items=[{"price": test_price['id'],  "quantity": 1}], mode="payment",)
 #
 #
-# print(test_session)

@@ -6,11 +6,14 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from config import settings
+from lms import servises as lms_serv
 from lms.models import Lesson, Course
 from lms.paginators import LMSPagination
 from lms.serializers import LessonSerializer, CourseSerializer
-from users import servises
+from users import servises as usr_serv
 from users.permission import IsModerator, IsProprietor
+
+
 
 
 # Create your views here.
@@ -30,14 +33,23 @@ class CourseViewSet(viewsets.ModelViewSet):
         serializer = CourseSerializer(paginated_queryset, many=True, context={'request': request})
         return self.get_paginated_response(serializer.data)
 
+    def partial_update(self, request, *args, **kwargs):
+        instance = self.queryset.get(pk=kwargs.get('pk'))
+        serializer = self.serializer_class(instance, data=request.data, partial=True, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        lms_serv.notifier(instance)
+        print('курс был обновлен', instance.name)
+        return Response(serializer.data)
+
     def perform_create(self, serializer):
-        stripe_product_id = servises.create_stripe_product(self.request.data['name'])
-        stripe_price_id = servises.create_stripe_price(stripe_product_id, self.request.data['price'])
+        stripe_product_id = usr_serv.create_stripe_product(self.request.data['name'])
+        stripe_price_id = usr_serv.create_stripe_price(stripe_product_id, self.request.data['price'])
         serializer.save(stripe_product_id=stripe_product_id, stripe_price_id=stripe_price_id)
 
     def get_permissions(self):
         if self.action == 'create':
-            #self.permission_classes = [IsAuthenticated, ~IsModerator]
+            # self.permission_classes = [IsAuthenticated, ~IsModerator]
             self.permission_classes = [IsAuthenticated]
 
         elif self.action == 'list':
@@ -45,9 +57,11 @@ class CourseViewSet(viewsets.ModelViewSet):
         elif self.action == 'retrieve':
             self.permission_classes = [IsAuthenticated, IsProprietor | IsModerator]
         elif self.action == 'update':
-            self.permission_classes = [IsAuthenticated, IsProprietor | IsModerator]
+            pass
+            #self.permission_classes = [IsAuthenticated, IsProprietor | IsModerator]
         elif self.action == 'partial_update':
-            self.permission_classes = [IsAuthenticated, IsProprietor | IsModerator]
+            pass
+            #self.permission_classes = [IsAuthenticated, IsProprietor | IsModerator]
         elif self.action == 'destroy':
             self.permission_classes = [IsAuthenticated, IsProprietor]
         return [permission() for permission in self.permission_classes]
