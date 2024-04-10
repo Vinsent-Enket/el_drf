@@ -9,9 +9,9 @@ from lms.models import Lesson, Course
 from users.models import User, Subscribe
 
 
-
 class LessonTestCase(APITestCase):
     """Почему то создается слишком много урокаов, как будто после каждого теста"""
+
     def setUp(self) -> None:
         self.user = User.objects.create(email='test@test.test')
         self.lesson = Lesson.objects.create(
@@ -99,5 +99,3 @@ class LessonTestCase(APITestCase):
             response.status_code,
             status.HTTP_204_NO_CONTENT
         )
-
-
