@@ -13,9 +13,10 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
-from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+from dotenv import load_dotenv
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 dot_env = os.path.join(BASE_DIR, '.env')
@@ -44,9 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework',
-    'django_filters',
     'rest_framework_simplejwt',
-    'crispy_forms',
     'drf_yasg',
     'corsheaders',
     'django_celery_beat',
@@ -99,7 +98,7 @@ DATABASES = {
         'NAME': os.getenv('NAME_DATABASE_SETTING'),
         'USER': os.getenv('USER_DATABASE_SETTING'),
         'PASSWORD': os.getenv('PASSWORD_DATABASE_SETTING'),
-        'PORT': os.getenv('PORT_DATABASE_SETTING')
+        'HOST': os.getenv('PORT_DATABASE_SETTING')
     }
 }
 

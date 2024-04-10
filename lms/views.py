@@ -14,8 +14,6 @@ from users import servises as usr_serv
 from users.permission import IsModerator, IsProprietor
 
 
-
-
 # Create your views here.
 
 def index(request):
@@ -58,10 +56,10 @@ class CourseViewSet(viewsets.ModelViewSet):
             self.permission_classes = [IsAuthenticated, IsProprietor | IsModerator]
         elif self.action == 'update':
             pass
-            #self.permission_classes = [IsAuthenticated, IsProprietor | IsModerator]
+            # self.permission_classes = [IsAuthenticated, IsProprietor | IsModerator]
         elif self.action == 'partial_update':
             pass
-            #self.permission_classes = [IsAuthenticated, IsProprietor | IsModerator]
+            # self.permission_classes = [IsAuthenticated, IsProprietor | IsModerator]
         elif self.action == 'destroy':
             self.permission_classes = [IsAuthenticated, IsProprietor]
         return [permission() for permission in self.permission_classes]
